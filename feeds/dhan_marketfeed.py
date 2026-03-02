@@ -50,7 +50,7 @@ def start_dhan_feed():
             security_id = str(data.get("securityId"))
 
             payload = {
-                "index": security_id,
+                "index": INDEX_MAP.get(security_id, security_id),
                 "ltp": data.get("LTP"),
                 "change": data.get("change"),
                 "changePercent": data.get("changePercent"),

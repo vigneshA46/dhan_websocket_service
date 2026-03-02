@@ -16,13 +16,7 @@ async def test_ws():
             while True:
                 msg = await ws.recv()
                 data = json.loads(msg)
-
-                print(
-                    f"📈 {datetime.now().strftime('%H:%M:%S')} | "
-                    f"{data['index']} | "
-                    f"LTP={data['ltp']} | "
-                    f"Δ={data['change']} ({data['changePercent']}%)"
-                )
+                print(data)
 
     except websockets.ConnectionClosed as e:
         print("❌ WebSocket closed:", e)
