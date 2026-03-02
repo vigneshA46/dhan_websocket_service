@@ -3,7 +3,7 @@ import json
 import websockets
 from datetime import datetime
 
-WS_URL = "ws://localhost:8765"
+WS_URL = "wss://dhanwebsocketservice-production-7979.up.railway.app"
 
 
 async def test_ws():
