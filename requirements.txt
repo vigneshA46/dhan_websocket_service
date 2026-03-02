@@ -1,0 +1,6 @@
+dhanhq
+python-dotenv
+pyotp
+requests
+websockets
+asyncio
