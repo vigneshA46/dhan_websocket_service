@@ -47,7 +47,7 @@ def start_dhan_feed():
             if not data:
                 continue
 
-            security_id = str(data.get("securityId"))
+            security_id = str(data.get("security_id"))
 
             payload = {
                 "index": INDEX_MAP.get(security_id, security_id),
