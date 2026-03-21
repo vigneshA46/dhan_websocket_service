@@ -3,8 +3,10 @@ from dhanhq import marketfeed
 from auth.dhan_token import get_access_token
 from websocket.frontend_ws import broadcast
 import os
+import time
 
 CLIENT_ID = os.getenv("CLIENT_ID")
+LATEST_DATA = {}
 
 instruments = [
     (marketfeed.NSE, "13", marketfeed.Quote),
@@ -56,11 +58,31 @@ def start_dhan_feed():
                 "changePercent": data.get("changePercent"),
                 "timestamp": data.get("exchangeTime")
             }
+            LATEST_DATA[security_id] = payload
 
-            print("📊 Market Tick:", payload)
-            loop.run_until_complete(broadcast(payload))
+            
+            
 
         except Exception as e:
             print("❌ Dhan WS error:", e)
             feed.run_forever()
             break
+
+
+def start_broadcast_loop():
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+
+    print("📡 Broadcast loop started")
+
+    while True:
+        try:
+            if LATEST_DATA:
+                for payload in LATEST_DATA.values():
+                    loop.run_until_complete(broadcast(payload))
+                    print("updated data",LATEST_DATA)
+
+            time.sleep(1)  # ✅ every 1 second
+
+        except Exception as e:
+            print("❌ Broadcast error:", e)

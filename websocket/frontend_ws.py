@@ -2,29 +2,37 @@ import asyncio
 import json
 import websockets
 
-CLIENTS = set()
-
+clients = set()
 
 async def handler(ws):
-    CLIENTS.add(ws)
-    print("🟢 Frontend connected")
+    clients.add(ws)
+    print("✅ Client connected")
 
     try:
         async for _ in ws:
             pass
-    finally:
-        CLIENTS.remove(ws)
-        print("🔴 Frontend disconnected")
 
+    except websockets.exceptions.ConnectionClosed:
+        print("⚠️ Client disconnected")
+
+    finally:
+        clients.remove(ws)
 
 async def broadcast(data):
-    if not CLIENTS:
+    if not clients:
         return
 
-    message = json.dumps(data)
-    await asyncio.gather(
-        *[client.send(message) for client in CLIENTS]
-    )
+    dead_clients = set()
+
+    for client in clients:
+        try:
+            await client.send(json.dumps(data))
+        except:
+            dead_clients.add(client)
+
+    # ✅ remove dead connections
+    for dc in dead_clients:
+        clients.discard(ws)
 
 
 def start_frontend_ws():
