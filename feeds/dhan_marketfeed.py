@@ -80,7 +80,7 @@ def start_broadcast_loop():
             if LATEST_DATA:
                 for payload in LATEST_DATA.values():
                     loop.run_until_complete(broadcast(payload))
-                    print("updated data",LATEST_DATA)
+                    print("updated data",payload)
 
             time.sleep(1)  # ✅ every 1 second
 
