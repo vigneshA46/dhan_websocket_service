@@ -9,13 +9,13 @@ CLIENT_ID = os.getenv("CLIENT_ID")
 instruments = [
     (marketfeed.NSE, "13", marketfeed.Quote),
     (marketfeed.NSE, "25", marketfeed.Quote),
-    (marketfeed.NSE, "27", marketfeed.Quote),
-    (marketfeed.NSE, "1", marketfeed.Quote),
-    (marketfeed.BSE, "860", marketfeed.Quote)
+    (marketfeed.IDX, "27", marketfeed.Quote),
+    (marketfeed.IDX, "1", marketfeed.Quote),
+    (marketfeed.IDX, "860", marketfeed.Quote)
 ]
 
 INDEX_MAP = {
-    "13": "NIFTY",
+    "13": "NIFTY", 
     "25": "BANKNIFTY",
     "27": "FINNIFTY",
     "1": "MIDCAP",
@@ -62,5 +62,5 @@ def start_dhan_feed():
 
         except Exception as e:
             print("❌ Dhan WS error:", e)
-            feed.disconnect()
+            feed.run_forever()
             break
