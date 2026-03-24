@@ -84,7 +84,7 @@ def start_broadcast_loop():
                             json=payload,
                             timeout=0.5
                         )
-                        print("📤 Sent:", payload)
+                        """ print("📤 Sent:", payload) """
                     except Exception as e:
                         print("POST error:", e)
 
