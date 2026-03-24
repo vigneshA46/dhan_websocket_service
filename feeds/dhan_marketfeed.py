@@ -56,9 +56,9 @@ def start_dhan_feed():
                 "strategy_id":"123",
                 "index": INDEX_MAP.get(security_id, security_id),
                 "ltp": data.get("LTP"),
-                "change": data.get("change"),
-                "changePercent": data.get("changePercent"),
-                "timestamp": data.get("exchangeTime")
+                "change": 0.0,
+                "changePercent": 0.0,
+                "timestamp": "nil"
             }
             LATEST_DATA[security_id] = payload
 
@@ -71,19 +71,24 @@ def start_dhan_feed():
             feed.run_forever()
             break
 
-
 def start_broadcast_loop():
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-
     print("📡 Broadcast loop started")
-    for payload in LATEST_DATA.values():
+
+    while True:
         try:
-            requests.post(
-                "https://dreaminalgo-backend-production.up.railway.app/api/telemetry",
-                json=payload,
-                timeout=0.5
-            )
-            print(payload)
+            if LATEST_DATA:
+                for payload in LATEST_DATA.values():
+                    try:
+                        requests.post(
+                            "https://dreaminalgo-backend-production.up.railway.app/api/telemetry",
+                            json=payload,
+                            timeout=0.5
+                        )
+                        print("📤 Sent:", payload)
+                    except Exception as e:
+                        print("POST error:", e)
+
+            time.sleep(1)  # ✅ run every 1 sec
+
         except Exception as e:
-            print("POST error:", e)
+            print("❌ Broadcast loop error:", e)
