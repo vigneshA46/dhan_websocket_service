@@ -4,6 +4,7 @@ from auth.dhan_token import get_access_token
 from websocket.frontend_ws import broadcast
 import os
 import time
+import requests
 
 CLIENT_ID = os.getenv("CLIENT_ID")
 LATEST_DATA = {}
@@ -52,6 +53,7 @@ def start_dhan_feed():
             security_id = str(data.get("security_id"))
 
             payload = {
+                "strategy_id":"123",
                 "index": INDEX_MAP.get(security_id, security_id),
                 "ltp": data.get("LTP"),
                 "change": data.get("change"),
@@ -61,6 +63,7 @@ def start_dhan_feed():
             LATEST_DATA[security_id] = payload
 
             
+
             
 
         except Exception as e:
@@ -74,15 +77,13 @@ def start_broadcast_loop():
     asyncio.set_event_loop(loop)
 
     print("📡 Broadcast loop started")
-
-    while True:
+    for payload in LATEST_DATA.values():
         try:
-            if LATEST_DATA:
-                for payload in LATEST_DATA.values():
-                    loop.run_until_complete(broadcast(payload))
-                    print("updated data",payload)
-
-            time.sleep(1)  # ✅ every 1 second
-
+            requests.post(
+                "https://dreaminalgo-backend-production.up.railway.app/api/telemetry",
+                json=payload,
+                timeout=0.5
+            )
+            print(payload)
         except Exception as e:
-            print("❌ Broadcast error:", e)
+            print("POST error:", e)
